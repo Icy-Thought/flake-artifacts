@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+BUILD_LOG="$HOME/.xmonad/build.log"
+
+nix-build --fallback --out-link ./result 2>&1 | tee "${BUILD_LOG}"
+
+nix build -f shell.nix xmonad-icy
+ln -f -s $(readlink result)/bin/xmonad-icy $1
+
+rm -v result | tee "${BUILD_LOG}"
