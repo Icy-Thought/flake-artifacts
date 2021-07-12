@@ -8,3 +8,46 @@ A place where deprecated configuration files are floating in empty space waiting
 #+begin_quote
 It's worth mentioning that this repository, like other configuration-based repositories, is subjected to change and therefore one should be aware of the changes made to the repository before blindly replacing/updating the necessary files driving their Nix environment to sanity.
 #+end_quote
+
+* =flake.nix=
+** Xmonad
+#+begin_src nix
+{
+  inputs = {
+    xmonadGH = {
+      url = "github:xmonad/xmonad";
+      flake = false;
+    };
+
+    xmonad-extrasGH = {
+      url = "github:xmonad/xmonad-extras";
+      flake = false;
+    };
+
+    xmonad-contribGH = {
+      url = "github:xmonad/xmonad-contrib";
+      flake = false;
+    };
+  };
+
+  outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, home-manager, ... }:
+
+    let
+      overlays = with inputs;
+        [
+          (final: prev: rec {
+            haskellPackages = prev.haskellPackages.override {
+              overrides = self: super: rec {
+                xmonad = self.callCabal2nix "xmonad" xmonadGH { };
+                xmonad-extras =
+                  self.callCabal2nix "xmonad-extras" xmonad-extrasGH { };
+                xmonad-contrib =
+                  self.callCabal2nix "xmonad-contrib" xmonad-contribGH { };
+              };
+            };
+          })
+        ];
+
+    in { };
+}
+#+end_src
