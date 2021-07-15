@@ -1,5 +1,15 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
+{- |
+   Module : Theme.Theme
+   Copyright : (c) 2021 Joan Milev <joantmilev@gmail.com>
+   License : MIT
+
+   Maintainer : Joan Milev <joantmilev@gmail.com>
+   Stability : Stable
+   Portability : Unknown
+-}
+
 module Theme.Theme ( basebg
                    , basefg
                    , basecr
@@ -27,7 +37,6 @@ module Theme.Theme ( basebg
                    ) where
 
 import           Prelude          (String)
-
 import           Theme.Xresources (xprop)
 
 basebg, basefg, basecr, base00, base08, base01, base09, base02, base10, base03, base11, base04, base12, base05, base13, base06, base14, base07, base15 :: String

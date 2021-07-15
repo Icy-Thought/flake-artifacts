@@ -1,16 +1,23 @@
-module Theme.Xresources (xprop) where
+{- |
+   Module : Theme.Xresources
+   Copyright : (c) 2021 Joan Milev <joantmilev@gmail.com>
+   License : MIT
 
-import           Prelude          (IO, Int, Maybe, ShowS, String, dropWhile,
-                                   fst, lines, snd, splitAt, tail, ($), (.),
-                                   (<$>), (==))
+   Maintainer : Joan Milev <joantmilev@gmail.com>
+   Stability : Stable
+   Portability : Unknown
+-}
+
+module Theme.Xresources (xprop) where
 
 import           Data.Bifunctor   (bimap)
 import           Data.Char        (isSpace)
 import           Data.List        (dropWhileEnd, elemIndex, find)
 import           Data.Maybe       (catMaybes, fromMaybe)
-
+import           Prelude          (IO, Int, Maybe, ShowS, String, dropWhile,
+                                   fst, lines, snd, splitAt, tail, ($), (.),
+                                   (<$>), (==))
 import           System.IO.Unsafe (unsafeDupablePerformIO)
-
 import           XMonad.Util.Run  (runProcessWithInput)
 
 xProperty :: String -> IO String

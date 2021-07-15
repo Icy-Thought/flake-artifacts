@@ -14,22 +14,15 @@ let
   ];
 
 in {
-  environment.systemPackages = builtins.concatLists [ xmonadPkgs ];
+  environment.systemPackages = xmonadPkgs;
 
   services = {
     blueman.enable = true;
 
     xserver = {
       xkbOptions = "caps:ctrl_modifier";
-      displayManager = { defaultSession = "none+xmonad"; };
-
-      windowManager.xmonad = {
-        enable = true;
-        enableContribAndExtras = true;
-        extraPackages = haskellPackages: with haskellPackages; [
-          xmobar
-        ];
-      };
+      windowManager.xmonad.enable = true;
+      displayManager.defaultSession = "none+xmonad";
     };
   };
 
