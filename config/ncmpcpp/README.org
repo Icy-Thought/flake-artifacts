@@ -1,0 +1,12 @@
+#+TITLE: NCMPCPP
+
+* Stacking Dunst Notifications
+To have dunst display the notifications in a stacking order, append the following lines to your ~dunst/default.nix~ file:
+
+#+begin_src sh
+dunstify "Now Playing ♫" "$(ncmpcpp -q --current-song="{%a - }{%t}|{%f}")" \
+  -a ncmpcpp \
+  -t 1000 \
+  -h string:x-dunst-stack-tag:mpc \
+  -u low
+#+end_src

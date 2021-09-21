@@ -1,0 +1,31 @@
+#+TITLE: EWW
+#+AUTHOR: Icy-Thought
+#+DATE: <2021-09-21 Tue>
+
+* Warning!
+The current setup does not work due to the absence of a =.yuck= file. Either wait for me to pick up eww sometime in the future or wait for the original auhtor to update the =eww.xml= file into the new file format (=.yuck=).
+
+* Installation
+** =flake.nix=
+#+begin_src nix
+inputs = {
+  eww.url = "github:elkowar/eww?rev=baad2bf8d21b643e15b9b54a0d750692ec599fd5";
+};
+
+outputs = inputs@{ eww }:
+
+  let
+    overlays = [
+      (final: prev: {
+        eww = eww.defaultPackage.x86_64-linux;
+      });
+    ];
+
+  in {}
+#+end_src
+
+** =packages/default.nix=
+Install the package like you usually install packages.
+#+begin_src nix
+environment.systemPackages = [ eww ];
+#+end_src
