@@ -1,8 +1,8 @@
 name:           my-xmonad
 version:        0.1.0
-synopsis:       Icy-Thought's XMonad Config
-homepage:       https://github.com/Icy-Thought/Snowflake/tree/main/config/my-xmonad
-author:         Icy-Thought
+synopsis:       IvanMalison's XMonad Config
+homepage:       https://github.com/IvanMalison/dotfiles/blob/master/dotfiles/config/xmonad/xmonad.hs
+author:         IvanMalison
 maintainer:     Icy-Thought
 build-type:     Simple
 cabal-version:  >=1.10

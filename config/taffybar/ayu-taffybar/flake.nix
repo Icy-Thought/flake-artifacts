@@ -1,7 +1,6 @@
 {
   inputs = {
     taffybar.url = "github:taffybar/taffybar";
-    # taffybar.url = "github:taffybar/taffybar";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -11,7 +10,7 @@
     taffybar,
     nixpkgs,
   }: let
-    overlay = import ../../overlays/taffybar.nix;
+    overlay = import ./taffybar.nix;
     overlays = taffybar.overlays ++ [overlay];
   in
     flake-utils.lib.eachDefaultSystem (system: let
@@ -19,7 +18,7 @@
         inherit system overlays;
         config.allowBroken = true;
       };
-    in rec {
+    in {
       devShells.default =
         pkgs.haskellPackages.shellFor {packages = p: [p.my-taffybar];};
       packages.default = pkgs.haskellPackages.my-taffybar;
