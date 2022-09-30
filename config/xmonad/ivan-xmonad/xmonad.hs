@@ -9,24 +9,25 @@
 
 module Main where
 
-import           Codec.Binary.UTF8.String              as UTF8
-import qualified Codec.Binary.UTF8.String              as UTF8String (encode)
-import qualified Control.Arrow                         as A
+import           Codec.Binary.UTF8.String      as UTF8
+import qualified Codec.Binary.UTF8.String      as UTF8String
+                                                ( encode )
+import qualified Control.Arrow                 as A
 import           Control.Monad
 import           Control.Monad.Trans.Class
 import           Control.Monad.Trans.Maybe
 import           Data.Aeson
-import qualified Data.ByteString.Lazy                  as B
+import qualified Data.ByteString.Lazy          as B
 import           Data.Char
 import           Data.Foldable
 import           Data.List
 import           Data.List.Split
-import qualified Data.Map                              as M
+import qualified Data.Map                      as M
 import           Data.Maybe
 import           Data.Monoid
-import qualified Data.MultiMap                         as MM
+import qualified Data.MultiMap                 as MM
 import           Data.Proxy
-import           Data.Tuple.Sequence                   (sequenceT)
+import           Data.Tuple.Sequence            ( sequenceT )
 import           Data.Typeable
 import           Foreign.C.Types
 import           Graphics.X11.ExtraTypes.XF86
@@ -39,25 +40,28 @@ import           System.IO.Unsafe
 import           System.Process
 import           Text.Printf
 import           Unsafe.Coerce
-import           XMonad                                hiding ((|||))
+import           XMonad                  hiding ( (|||) )
+import           XMonad.Actions.CycleWS  hiding ( nextScreen )
 import           XMonad.Actions.CycleWorkspaceByScreen
-import           XMonad.Actions.CycleWS                hiding (nextScreen)
-import qualified XMonad.Actions.DynamicWorkspaceOrder  as DWO
-import           XMonad.Actions.DynamicWorkspaces      hiding (renameWorkspace,
-                                                        withWorkspace)
+import qualified XMonad.Actions.DynamicWorkspaceOrder
+                                               as DWO
+import           XMonad.Actions.DynamicWorkspaces
+                                         hiding ( renameWorkspace
+                                                , withWorkspace
+                                                )
 import           XMonad.Actions.Minimize
 import           XMonad.Actions.Navigation2D
-import qualified XMonad.Actions.SwapWorkspaces         as SW
+import qualified XMonad.Actions.SwapWorkspaces as SW
 import           XMonad.Actions.UpdatePointer
 import           XMonad.Actions.WindowBringer
 import           XMonad.Actions.WindowGo
 import           XMonad.Actions.WorkspaceNames
-import           XMonad.Config                         ()
-import           XMonad.Core                           (getDirectories)
+import           XMonad.Config                  ( )
+import           XMonad.Core                    ( getDirectories )
 import           XMonad.Hooks.DynamicProperty
 import           XMonad.Hooks.EwmhDesktops
 import           XMonad.Hooks.FadeInactive
-import           XMonad.Hooks.Focus                    hiding (currentWorkspace)
+import           XMonad.Hooks.Focus      hiding ( currentWorkspace )
 import           XMonad.Hooks.ManageDocks
 import           XMonad.Hooks.ManageHelpers
 import           XMonad.Hooks.Minimize
@@ -70,24 +74,24 @@ import           XMonad.Layout.LayoutCombinators
 import           XMonad.Layout.LayoutModifier
 import           XMonad.Layout.LimitWindows
 import           XMonad.Layout.MagicFocus
-import           XMonad.Layout.Magnifier               hiding (Toggle)
+import           XMonad.Layout.Magnifier hiding ( Toggle )
 import           XMonad.Layout.Minimize
 import           XMonad.Layout.MultiColumns
 import           XMonad.Layout.MultiToggle
 import           XMonad.Layout.MultiToggle.Instances
 import           XMonad.Layout.NoBorders
-import qualified XMonad.Layout.Renamed                 as RN
+import qualified XMonad.Layout.Renamed         as RN
 import           XMonad.Layout.Spacing
 import           XMonad.Layout.Tabbed
-import           XMonad.Main                           (launch)
+import           XMonad.Main                    ( launch )
 import qualified XMonad.Operations
-import qualified XMonad.StackSet                       as W
+import qualified XMonad.StackSet               as W
 import           XMonad.Util.CustomKeys
-import qualified XMonad.Util.Dmenu                     as DM
-import qualified XMonad.Util.ExtensibleState           as XS
+import qualified XMonad.Util.Dmenu             as DM
+import qualified XMonad.Util.ExtensibleState   as XS
 import           XMonad.Util.Minimize
-import           XMonad.Util.NamedScratchpad           as NS
-import           XMonad.Util.NamedWindows              (getName)
+import           XMonad.Util.NamedScratchpad   as NS
+import           XMonad.Util.NamedWindows       ( getName )
 import           XMonad.Util.Run
 import           XMonad.Util.WorkspaceCompare
 
@@ -244,8 +248,7 @@ virtualClasses =
 -- Commands
 chromiumCommand = "brave"
 
-protonMailCommand =
-  "brave --new-window https://mail.proton.me/u/0/inbox"
+protonMailCommand = "brave --new-window https://mail.proton.me/u/0/inbox"
 
 firefoxCommand = "firefox-devedition"
 
@@ -416,7 +419,7 @@ layoutsStart layout = (layout, [Layout layout])
   (joined ||| newLayout, layouts ++ [Layout newLayout])
 
 layoutInfo =
-  layoutsStart (rename "2 Columns"  (Tall 1 (3 / 100) (1 / 2)))
+  layoutsStart (rename "2 Columns" (Tall 1 (3 / 100) (1 / 2)))
     |||! rename "Large Main" (Tall 1 (3 / 100) (3 / 4))
     |||! rename "3 Columns"  (multiCol [1, 1] 2 0.01 (-0.5))
     |||! myTabbed
@@ -817,18 +820,18 @@ termFloat = customFloating $ W.RationalRect l t w h
   l = 0.1 - w
 
 scratchpads =
-  [ NS "bottom"             bottomCommand       bottomSelector       nearFullFloat
-  , NS "discord"            discordCommand      discordSelector      nearFullFloat
+  [ NS "bottom" bottomCommand bottomSelector nearFullFloat
+  , NS "discord" discordCommand discordSelector nearFullFloat
   , NS "emacs"              emacsCommand        emacsSelector        nonFloating
-  , NS "neovide"            neovideCommand      neovideSelector      nearFullFloat
-  , NS "Picture-in-Picture" ffPicCommand        ffPicSelector        defaultFloating
-  , NS "protonmail"         protonMailCommand   protonMailSelector   nearFullFloat
-  , NS "spotify"            spotifyCommand      spotifySelector      nearFullFloat
-  , NS "transmission"       transmissionCommand transmissionSelector nearFullFloat
+  , NS "neovide" neovideCommand neovideSelector nearFullFloat
+  , NS "Picture-in-Picture" ffPicCommand ffPicSelector defaultFloating
+  , NS "protonmail" protonMailCommand protonMailSelector nearFullFloat
+  , NS "spotify" spotifyCommand spotifySelector nearFullFloat
+  , NS "transmission" transmissionCommand transmissionSelector nearFullFloat
   ]
  where
-  bottomCommand         = "kitty -T Bottom -e btm"
-  bottomSelector        = title =? "Bottom"
+  bottomCommand        = "kitty -T Bottom -e btm"
+  bottomSelector       = title =? "Bottom"
 
   discordCommand       = "discord"
   discordSelector      = className =? "discord"
@@ -971,94 +974,94 @@ addKeys conf@XConfig { modMask = modm } =
          ]
     ++
     -- Window manipulation
-         [ ((modm, xK_g)                    , myGoToWindow)
-         , ((modm, xK_b)                    , myBringWindow)
-         , ((modm .|. shiftMask, xK_b)      , myReplaceWindow)
-         , ((modm .|. controlMask, xK_space), deactivateFullOr goFullscreen)
-         , ((modm, xK_m)                    , withFocused minimizeWindow)
-         , ( (modm .|. shiftMask, xK_m)
-           , deactivateFullOr $ withLastMinimized maximizeWindowAndFocus
-           )
-         , ((modm, xK_x), addHiddenWorkspace "NSP" >> windows (W.shift "NSP"))
-         , ((modalt, xK_space), deactivateFullOr restoreOrMinimizeOtherClasses)
-         , ((modalt, xK_Return), deactivateFullAnd restoreAllMinimized)
-         , ((hyper, xK_g)      , gatherThisClass)
-         ,
+       [ ((modm, xK_g), myGoToWindow)
+       , ((modm, xK_b), myBringWindow)
+       , ((modm .|. shiftMask, xK_b), myReplaceWindow)
+       , ((modm .|. controlMask, xK_space), deactivateFullOr goFullscreen)
+       , ((modm, xK_m), withFocused minimizeWindow)
+       , ( (modm .|. shiftMask, xK_m)
+         , deactivateFullOr $ withLastMinimized maximizeWindowAndFocus
+         )
+       , ((modm, xK_x), addHiddenWorkspace "NSP" >> windows (W.shift "NSP"))
+       , ((modalt, xK_space), deactivateFullOr restoreOrMinimizeOtherClasses)
+       , ((modalt, xK_Return), deactivateFullAnd restoreAllMinimized)
+       , ((hyper, xK_g), gatherThisClass)
+       ,
          -- Focus/layout manipulation
-           ((modm, xK_e)       , goToNextScreenX)
-         , ((modm, xK_slash)   , sendMessage $ Toggle MIRROR)
-         , ( (modm, xK_backslash)
-           , cycleWorkspaceOnCurrentScreen [xK_Super_L] xK_backslash xK_slash
-           )
-         , ((modm, xK_space), deactivateFullOr $ sendMessage NextLayout)
-         , ((modm, xK_z)                 , shiftToNextScreenX)
-         , ((modm .|. shiftMask, xK_z)   , shiftToEmptyNextScreen)
-         , ((modm .|. shiftMask, xK_h)   , shiftToEmptyAndView)
-         , ((hyper, xK_5), getWorkspaceDmenu >>= windows . SW.swapWithCurrent)
-         ,
+         ((modm, xK_e), goToNextScreenX)
+       , ((modm, xK_slash), sendMessage $ Toggle MIRROR)
+       , ( (modm, xK_backslash)
+         , cycleWorkspaceOnCurrentScreen [xK_Super_L] xK_backslash xK_slash
+         )
+       , ((modm, xK_space), deactivateFullOr $ sendMessage NextLayout)
+       , ((modm, xK_z), shiftToNextScreenX)
+       , ((modm .|. shiftMask, xK_z), shiftToEmptyNextScreen)
+       , ((modm .|. shiftMask, xK_h), shiftToEmptyAndView)
+       , ((hyper, xK_5), getWorkspaceDmenu >>= windows . SW.swapWithCurrent)
+       ,
          -- These ought to be rebound for boringWindows support
-           ((hyper, xK_e)                , moveTo Next emptyWS)
-         ,
+         ((hyper, xK_e), moveTo Next emptyWS)
+       ,
          -- Miscellaneous XMonad
-           ((hyper, xK_1)                , toggleFadingForActiveWindow)
-         , ((hyper .|. shiftMask, xK_1)  , toggleFadingForActiveWorkspace)
-         , ((hyper .|. controlMask, xK_1), toggleFadingForActiveScreen)
-         , ((hyper, xK_t)                , selectToggle)
-         , ((modalt, xK_4)               , selectLimit)
-         , ((hyper, xK_3)                , addWorkspacePrompt def)
-         , ((modalt, xK_3)               , selectWorkspace def)
-         , ((hyper .|. mod1Mask, xK_3)   , removeWorkspace)
-         , ((hyper .|. mod1Mask, xK_r)   , renameWorkspace def)
-         , ((hyper, xK_l)                , selectLayout)
-         ,
+         ((hyper, xK_1), toggleFadingForActiveWindow)
+       , ((hyper .|. shiftMask, xK_1), toggleFadingForActiveWorkspace)
+       , ((hyper .|. controlMask, xK_1), toggleFadingForActiveScreen)
+       , ((hyper, xK_t), selectToggle)
+       , ((modalt, xK_4), selectLimit)
+       , ((hyper, xK_3), addWorkspacePrompt def)
+       , ((modalt, xK_3), selectWorkspace def)
+       , ((hyper .|. mod1Mask, xK_3), removeWorkspace)
+       , ((hyper .|. mod1Mask, xK_r), renameWorkspace def)
+       , ((hyper, xK_l), selectLayout)
+       ,
          -- ScratchPad(s)
-           ((modalt, xK_b)               , doScratchpad "bottom")
-         , ((modalt, xK_d)               , doScratchpad "discord")
-         , ((modalt, xK_e)               , doScratchpad "neovide")
-         , ((modalt, xK_m)               , doScratchpad "protonmail")
-         , ((modalt, xK_s)               , doScratchpad "spotify")
-         , ((modalt, xK_t)               , doScratchpad "transmission")
-         ,
+         ((modalt, xK_b), doScratchpad "bottom")
+       , ((modalt, xK_d), doScratchpad "discord")
+       , ((modalt, xK_e), doScratchpad "neovide")
+       , ((modalt, xK_m), doScratchpad "protonmail")
+       , ((modalt, xK_s), doScratchpad "spotify")
+       , ((modalt, xK_t), doScratchpad "transmission")
+       ,
          -- Rofi(s)
-           ((modm, xK_p)                 , spawn "rofi -show drun -show-icons")
-         , ((modm .|. shiftMask, xK_p)   , spawn "rofi -show run")
-         , ((hyper, xK_p)                , spawn "rofi-systemd")
-         ,
+         ((modm, xK_p), spawn "rofi -show drun -show-icons")
+       , ((modm .|. shiftMask, xK_p), spawn "rofi -show run")
+       , ((hyper, xK_p), spawn "rofi-systemd")
+       ,
          -- Specific program spawning
-           ((modalt, xK_v)               , spawn "pavucontrol")
+         ((modalt, xK_v), spawn "pavucontrol")
          -- , ((modm .|. shiftMask, xK_x)   , spawn "whatever-lock") <- lockscreen when found!
          -- , ((modalt, xK_p)               , spawn "rofi -show power") <- rofi power controls
-         ,
+       ,
          -- Playerctl
-           ((modm, xK_Up)                , spawn "playerctl play-pause")
-         , ((modm, xK_Down)              , spawn "playerctl play-pause")
-         , ((modm, xK_Right)             , spawn "playerctl next")
-         , ((modm, xK_Left)              , spawn "playerctl previous")
-         ,
+         ((modm, xK_Up), spawn "playerctl play-pause")
+       , ((modm, xK_Down), spawn "playerctl play-pause")
+       , ((modm, xK_Right), spawn "playerctl next")
+       , ((modm, xK_Left), spawn "playerctl previous")
+       ,
          -- Volume control
-           ((0, xF86XK_AudioRaiseVolume) , spawn "volctl --up")
-         , ((0, xF86XK_AudioLowerVolume) , spawn "volctl --down")
-         , ((0, xF86XK_AudioMute)        , spawn "volctl --mute")
+         ((0, xF86XK_AudioRaiseVolume), spawn "volctl --up")
+       , ((0, xF86XK_AudioLowerVolume), spawn "volctl --down")
+       , ((0, xF86XK_AudioMute), spawn "volctl --mute")
          -- , ((hyper .|. shiftMask, xK_q)  , spawn "volctl --mute-active")
          -- , ((halt, xK_q)                 , spawn "volctl --mute-active only")
-         , ((0, xF86XK_AudioMicMute)     , spawn "micvol --mute")
-         ,
+       , ((0, xF86XK_AudioMicMute), spawn "micvol --mute")
+       ,
          -- Brightness control
-           ((0, xF86XK_MonBrightnessUp)  , spawn "brightctl --up")
-         , ((0, xF86XK_MonBrightnessDown), spawn "brightctl --down")
-         ,
+         ((0, xF86XK_MonBrightnessUp), spawn "brightctl --up")
+       , ((0, xF86XK_MonBrightnessDown), spawn "brightctl --down")
+       ,
          -- (Sc) current workspace
-           ((0, xK_Print)                , spawn "scrcap -w")
-         , ((controlMask, xK_Print)      , spawn "scrcap -c -w")
-         ,
+         ((0, xK_Print), spawn "scrcap -w")
+       , ((controlMask, xK_Print), spawn "scrcap -c -w")
+       ,
          -- (Sc) active window
-           ((mod1Mask, xK_Print)         , spawn "scrcap -a")
-         , ((controlMask .|. mod1Mask, xK_Print) , spawn "scrcap -c -a")
-         ,
+         ((mod1Mask, xK_Print), spawn "scrcap -a")
+       , ((controlMask .|. mod1Mask, xK_Print), spawn "scrcap -c -a")
+       ,
          -- (Sc) selected area
-           ((shiftMask, xK_Print)        , spawn "scrcap -r")
-         , ((controlMask .|. shiftMask, xK_Print), spawn "scrcap -c -r")
-         ]
+         ((shiftMask, xK_Print), spawn "scrcap -r")
+       , ((controlMask .|. shiftMask, xK_Print), spawn "scrcap -c -r")
+       ]
     ++
     -- Replace moving bindings
        [ ((additionalMask .|. modm, key), windows $ function workspace)
