@@ -1,21 +1,17 @@
-{
-  inputs,
-  options,
-  config,
-  lib,
-  pkgs,
-  ...
+{ inputs
+, options
+, config
+, lib
+, pkgs
+, ...
 }:
 with lib;
-with lib.my; let
-  cfg = config.modules.desktop.xmonad;
-  configDir = config.snowflake.configDir;
-in {
+with lib.my; {
   options.modules.desktop.xmonad = {
     enable = mkBoolOpt false;
   };
 
-  config = mkIf cfg.enable {
+  config = mkIf config.modules.desktop.xmonad.enable {
     nixpkgs.overlays = with inputs; [
       xmonad.overlay
       xmonad-contrib.overlay
@@ -36,11 +32,10 @@ in {
     modules.desktop = {
       media.browser.nautilus.enable = true;
       extra = {
-        customLayout.enable = true;
+        dunst.enable = true;
         fcitx5.enable = true;
         mimeApps.enable = true; # mimeApps -> default launch application
         picom.enable = true;
-        dunst.enable = true;
         rofi.enable = true;
         taffybar.enable = true;
       };
@@ -50,21 +45,17 @@ in {
       enable = true;
       displayManager = {
         defaultSession = "none+xmonad";
-        lightdm = {
-          enable = true;
-          greeters.mini.enable = true;
-        };
+        lightdm.enable = true;
+        lightdm.greeters.mini.enable = true;
       };
 
-      windowManager.session = [
-        {
-          name = "xmonad";
-          start = ''
-            /usr/bin/env my-xmonad &
-            waitPID=$!
-          '';
-        }
-      ];
+      windowManager.session = [{
+        name = "xmonad";
+        start = ''
+          /usr/bin/env my-xmonad &
+          waitPID=$!
+        '';
+      }];
     };
 
     services = {
@@ -84,7 +75,7 @@ in {
       numlock.enable = true;
       preferStatusNotifierItems = true;
       windowManager.command = "${getExe pkgs.haskellPackages.my-xmonad}";
-      importedVariables = ["GDK_PIXBUF_MODULE_FILE"];
+      importedVariables = [ "GDK_PIXBUF_MODULE_FILE" ];
     };
   };
 }

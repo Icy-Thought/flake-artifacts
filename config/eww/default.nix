@@ -45,7 +45,8 @@ let
     fi
   '';
 
-in {
+in
+{
   home.packages = [ launch_eww ];
 
   xdg.configFile."eww" = {
