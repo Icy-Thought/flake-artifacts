@@ -97,7 +97,7 @@ import           XMonad.Util.WorkspaceCompare
 
 myConfig = def
   { modMask            = mod4Mask
-  , terminal           = "kitty"
+  , terminal           = "wezterm"
   , manageHook         = namedScratchpadManageHook scratchpads
   , layoutHook         = myLayoutHook
   , borderWidth        = 2
@@ -126,9 +126,9 @@ icyTheme = def { activeColor         = icyActive
                , fontName            = "xft:VictorMono Nerd Font:style=SemiBold"
                }
 
-icyActive = "#c9cbff"
+icyActive = "#1abc9c"
 
-icyInactive = "#1a1b25"
+icyInactive = "#1a1b26"
 
 restartEventHook e@ClientMessageEvent { ev_message_type = mt } = do
   a <- getAtom "XMONAD_RESTART"
@@ -229,26 +229,26 @@ getWorkspaceDmenu = myDmenu (workspaces myConfig)
 -- Selectors
 isProtonMailTitle t = isInfixOf "@proton.me" t && isInfixOf "Proton Mail" t
 
-isChromiumClass = isInfixOf "Brave"
+isChromiumClass = isInfixOf "Chromium"
 
 noSpecialChromiumTitles = helper <$> title
   where helper t = not $ any ($ t) [isProtonMailTitle]
 
 chromiumSelectorBase = isChromiumClass <$> className
 
-chromiumSelector = className =? "brave-browser"
+chromiumSelector = className =? "chromium-browser"
 
-firefoxSelector = className =? "Firefox"
+firefoxSelector = className =? "firefox-aurora"
 
 protonMailSelector = chromiumSelectorBase <&&> fmap isProtonMailTitle title
 
 virtualClasses =
-  [(protonMailSelector, "ProtonMail"), (chromiumSelector, "Brave")]
+  [(protonMailSelector, "Proton Mail"), (chromiumSelector, "Chromium")]
 
 -- Commands
-chromiumCommand = "brave"
+chromiumCommand = "chromium"
 
-protonMailCommand = "brave --new-window https://mail.proton.me/u/0/inbox"
+protonMailCommand = "chromium --new-window https://mail.proton.me/u/1/inbox"
 
 firefoxCommand = "firefox-devedition"
 
@@ -820,33 +820,41 @@ termFloat = customFloating $ W.RationalRect l t w h
   l = 0.1 - w
 
 scratchpads =
-  [ NS "bottom" bottomCommand bottomSelector nearFullFloat
-  , NS "discord" discordCommand discordSelector nearFullFloat
-  , NS "emacs"              emacsCommand        emacsSelector        nonFloating
-  , NS "neovide" neovideCommand neovideSelector nearFullFloat
-  , NS "Picture-in-Picture" ffPicCommand ffPicSelector defaultFloating
-  , NS "protonmail" protonMailCommand protonMailSelector nearFullFloat
-  , NS "spotify" spotifyCommand spotifySelector nearFullFloat
-  , NS "transmission" transmissionCommand transmissionSelector nearFullFloat
+  [ NS "SysMon"             sysMonCommand       sysMonSelector       nearFullFloat
+  , NS "Discord"            discordCommand      discordSelector      nearFullFloat
+  , NS "Element"            elementCommand      elementSelector      nearFullFloat
+  , NS "GalaxyBudsClient"   gBudsCommand        gBudsSelector        nearFullFloat
+  , NS "Neovide"            neovideCommand      neovideSelector      nearFullFloat
+  , NS "Picture-in-Picture" firefoxPPCommand    firefoxPPSelector    defaultFloating
+  , NS "ProtonMail"         protonMailCommand   protonMailSelector   nearFullFloat
+  , NS "Spotify"            spotifyCommand      spotifySelector      nearFullFloat
+  , NS "Telegram"           telegramCommand     telegramSelector     nearFullFloat
+  , NS "Transmission"       transmissionCommand transmissionSelector nearFullFloat
   ]
  where
-  bottomCommand        = "kitty -T Bottom -e btm"
-  bottomSelector       = title =? "Bottom"
+  sysMonCommand        = "wezterm start --always-new-process -- -t 'System Monitor' btop"
+  sysMonSelector       = title =? "System Monitor"
 
   discordCommand       = "discord"
   discordSelector      = className =? "discord"
 
-  emacsCommand         = "emacsclient -c"
-  emacsSelector        = className =? "Emacs"
+  elementCommand       = "element-desktop"
+  elementSelector      = className =? "element"
 
-  ffPicCommand         = "Picture-in-Picture"
-  ffPicSelector        = title =? "Picture-in-Picture"
+  gBudsCommand         = "GalaxyBudsClient"
+  gBudsSelector        = className =? "GalaxyBudsClient"
 
-  neovideCommand       = "neovide"
+  neovideCommand       = "neovide --multigrid --frame none"
   neovideSelector      = className =? "neovide"
+
+  firefoxPPCommand     = "Picture-in-Picture"
+  firefoxPPSelector    = title =? "Picture-in-Picture"
 
   spotifyCommand       = "spotify"
   spotifySelector      = className =? "Spotify"
+
+  telegramCommand      = "telegram-desktop"
+  telegramSelector     = className =? "TelegramDesktop"
 
   transmissionCommand  = "transmission-gtk"
   transmissionSelector = className =? "Transmission-gtk"
@@ -1015,12 +1023,14 @@ addKeys conf@XConfig { modMask = modm } =
        , ((hyper, xK_l), selectLayout)
        ,
          -- ScratchPad(s)
-         ((modalt, xK_b), doScratchpad "bottom")
-       , ((modalt, xK_d), doScratchpad "discord")
-       , ((modalt, xK_e), doScratchpad "neovide")
-       , ((modalt, xK_m), doScratchpad "protonmail")
-       , ((modalt, xK_s), doScratchpad "spotify")
-       , ((modalt, xK_t), doScratchpad "transmission")
+         ((modalt, xK_b), doScratchpad "SysMon")
+       , ((modalt, xK_j), doScratchpad "Discord")
+       , ((modalt, xK_k), doScratchpad "Element")
+       , ((modalt, xK_e), doScratchpad "Neovide")
+       , ((modalt, xK_m), doScratchpad "ProtonMail")
+       , ((modalt, xK_s), doScratchpad "Spotify")
+       , ((modalt, xK_h), doScratchpad "Telegram")
+       , ((modalt, xK_t), doScratchpad "Transmission")
        ,
          -- Rofi(s)
          ((modm, xK_p), spawn "rofi -show drun -show-icons")
@@ -1033,34 +1043,33 @@ addKeys conf@XConfig { modMask = modm } =
          -- , ((modalt, xK_p)               , spawn "rofi -show power") <- rofi power controls
        ,
          -- Playerctl
-         ((modm, xK_Up), spawn "playerctl play-pause")
+       , ((modm, xK_Left), spawn "playerctl previous")
        , ((modm, xK_Down), spawn "playerctl play-pause")
        , ((modm, xK_Right), spawn "playerctl next")
-       , ((modm, xK_Left), spawn "playerctl previous")
        ,
          -- Volume control
-         ((0, xF86XK_AudioRaiseVolume), spawn "volctl --up")
-       , ((0, xF86XK_AudioLowerVolume), spawn "volctl --down")
-       , ((0, xF86XK_AudioMute), spawn "volctl --mute")
+         ((0, xF86XK_AudioRaiseVolume), spawn "volctl increase")
+       , ((0, xF86XK_AudioLowerVolume), spawn "volctl decrease")
+       , ((0, xF86XK_AudioMute), spawn "volctl toggle-mute")
          -- , ((hyper .|. shiftMask, xK_q)  , spawn "volctl --mute-active")
          -- , ((halt, xK_q)                 , spawn "volctl --mute-active only")
-       , ((0, xF86XK_AudioMicMute), spawn "micvol --mute")
+       , ((0, xF86XK_AudioMicMute), spawn "micvol toggle-mute")
        ,
          -- Brightness control
-         ((0, xF86XK_MonBrightnessUp), spawn "brightctl --up")
-       , ((0, xF86XK_MonBrightnessDown), spawn "brightctl --down")
+         ((0, xF86XK_MonBrightnessUp), spawn "brightctl increase -l 5")
+       , ((0, xF86XK_MonBrightnessDown), spawn "brightctl decrease -l 5")
        ,
          -- (Sc) current workspace
-         ((0, xK_Print), spawn "scrcap -w")
-       , ((controlMask, xK_Print), spawn "scrcap -c -w")
+         ((0, xK_Print), spawn "scrcapy system --workspace")
+       , ((controlMask, xK_Print), spawn "scrcapy clipboard -w")
        ,
          -- (Sc) active window
-         ((mod1Mask, xK_Print), spawn "scrcap -a")
-       , ((controlMask .|. mod1Mask, xK_Print), spawn "scrcap -c -a")
+         ((mod1Mask, xK_Print), spawn "scrcapy system --active-window")
+       , ((controlMask .|. mod1Mask, xK_Print), spawn "scracpy clipboard --active-window")
        ,
          -- (Sc) selected area
-         ((shiftMask, xK_Print), spawn "scrcap -r")
-       , ((controlMask .|. shiftMask, xK_Print), spawn "scrcap -c -r")
+         ((shiftMask, xK_Print), spawn "scracpy system --selection")
+       , ((controlMask .|. shiftMask, xK_Print), spawn "scracpy clipboard --selection")
        ]
     ++
     -- Replace moving bindings
