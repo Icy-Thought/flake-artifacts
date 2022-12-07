@@ -1,26 +1,14 @@
 {
-  inputs = {
-    flake-utils.url = "github:numtide/flake-utils";
-    xmonad = {
-      url = "github:xmonad/xmonad";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    xmonad-contrib = {
-      url = "github:icy-thought/xmonad-contrib";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-  };
+  inputs.flake-utils.url = "github:numtide/flake-utils";
 
   outputs =
     { self
     , flake-utils
     , nixpkgs
-    , xmonad
-    , xmonad-contrib
     ,
     }:
     let
-      overlay = import ./overlay.nix;
+      overlay = import ../../overlays/xmonad.nix;
       overlays = [ overlay xmonad.overlay xmonad-contrib.overlay ];
     in
     flake-utils.lib.eachDefaultSystem
@@ -40,7 +28,7 @@
             haskell-language-server
             hlint
             implicit-hie
-            brittany
+            stylish-haskell
           ];
         };
         packages.default = pkgs.haskellPackages.my-xmonad;
