@@ -42,9 +42,9 @@ myConfig = def
 
 myManageHook :: ManageHook
 myManageHook = composeAll
-  [ isFullscreen --> doFullFloat
-  , isDialog --> doFloat
-  , className =? "MPlayer" --> doFloat
-  , className =? "Gimp" --> doFloat
+  [ isFullscreen                 --> doFullFloat
+  , isDialog                     --> doFloat
+  , className =? "MPlayer"       --> doFloat
+  , className =? "Gimp"          --> doFloat
   , resource =? "desktop_window" --> doIgnore
   ]
