@@ -1,19 +1,12 @@
-{ config
-, options
-, pkgs
-, lib
-, ...
-}:
+{ config, options, pkgs, lib, ... }:
 with lib;
-with lib.my; let
+with lib.my;
+let
   cfg = config.modules.shell.zsh;
   zshDir = "${config.snowflake.configDir}/zsh";
   themeCfg = config.modules.themes;
-in
-{
-  options.modules.shell.zsh = {
-    enable = mkBoolOpt false;
-  };
+in {
+  options.modules.shell.zsh = { enable = mkBoolOpt false; };
 
   config = mkIf cfg.enable {
     user.packages = with pkgs; [
@@ -59,58 +52,51 @@ in
 
       ohMyZsh = {
         enable = true;
-        plugins = [
-          "vi-mode"
-          "colored-man-pages"
-          "history-substring-search"
-        ];
-        customPkgs =
-          let
-            zsh-abbr = {
-              src = pkgs.fetchFromGitHub {
-                owner = "olets";
-                repo = "zsh-abbr";
-                rev = "v4.8.0";
-                sha256 = "diitszKbu530zXbJx4xmfOjLsITE9ucmWdsz9VTXsKg=";
-              };
+        plugins = [ "vi-mode" "colored-man-pages" "history-substring-search" ];
+        customPkgs = let
+          zsh-abbr = {
+            src = pkgs.fetchFromGitHub {
+              owner = "olets";
+              repo = "zsh-abbr";
+              rev = "v4.8.0";
+              sha256 = "diitszKbu530zXbJx4xmfOjLsITE9ucmWdsz9VTXsKg=";
             };
-          in
-          (with pkgs; [
-            zsh-nix-shell
-            zsh-fzf-tab
-            zsh-autopair
-            zsh-you-should-use
-            zsh-abbr
-          ]);
+          };
+        in (with pkgs; [
+          zsh-nix-shell
+          zsh-fzf-tab
+          zsh-autopair
+          zsh-you-should-use
+          zsh-abbr
+        ]);
       };
 
-      promptInit =
-        let
-          fzf-theme = pkgs.writeShellScript "fzf.config" (with themeCfg.colors.main; ''
+      promptInit = let
+        fzf-theme = pkgs.writeShellScript "fzf.config"
+          (with themeCfg.colors.main; ''
             export FZF_DEFAULT_OPTS=" \
             --color=bg:,bg+:${types.bg},spinner:${types.panelbg},hl:${normal.red} \
             --color=fg:${types.border},header:${normal.red},info:${normal.magenta},pointer:${types.border} \
             --color=marker:${normal.magenta},fg+:${types.border},prompt:${types.border},hl+:${normal.red}"
           '');
-        in
-        ''
-          #
-          # -------===[ History-Substring-Search ]===------- #
-          ## Bind `<Up>` and `<Down>` arrow-keys
-          bindkey "^[[A" history-substring-search-up
-          bindkey "^[[B" history-substring-search-down
+      in ''
+        #
+        # -------===[ History-Substring-Search ]===------- #
+        ## Bind `<Up>` and `<Down>` arrow-keys
+        bindkey "^[[A" history-substring-search-up
+        bindkey "^[[B" history-substring-search-down
 
-          ## Bind `j` and `k` in VI-Mode
-          bindkey -M vicmd 'k' history-substring-search-up
-          bindkey -M vicmd 'j' history-substring-search-down
+        ## Bind `j` and `k` in VI-Mode
+        bindkey -M vicmd 'k' history-substring-search-up
+        bindkey -M vicmd 'j' history-substring-search-down
 
-          # `jk` For normal-mode
-          bindkey 'jk' vi-cmd-mode
+        # `jk` For normal-mode
+        bindkey 'jk' vi-cmd-mode
 
-          # -------===[ Plugin Management ]===------- #
-          source ${pkgs.fzf-zsh}/share/zsh/plugins/fzf-zsh/fzf-zsh.plugin.zsh
-          source ${fzf-theme}
-        '';
+        # -------===[ Plugin Management ]===------- #
+        source ${pkgs.fzf-zsh}/share/zsh/plugins/fzf-zsh/fzf-zsh.plugin.zsh
+        source ${fzf-theme}
+      '';
 
       interactiveShellInit = ''
         # -------===[ General ]===------- #
@@ -164,13 +150,13 @@ in
         source "$HOME/.config/zsh/fzf.zsh"
       '';
 
-      shellAliases = {
-        exa = "exa --group-directories-first";
-      };
+      shellAliases = { exa = "exa --group-directories-first"; };
     };
 
     environment.variables = {
-      FZF_DEFAULT_COMMAND = "${getExe ripgrep} --files --no-ignore --hidden --follow --glob '!.git/*'";
+      FZF_DEFAULT_COMMAND = "${
+          getExe ripgrep
+        } --files --no-ignore --hidden --follow --glob '!.git/*'";
     };
 
     home.configFile = {

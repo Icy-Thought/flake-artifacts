@@ -1,22 +1,12 @@
-{ inputs
-, options
-, config
-, lib
-, pkgs
-, ...
-}:
+{ inputs, options, config, lib, pkgs, ... }:
 with lib;
 with lib.my; {
-  options.modules.desktop.xmonad = {
-    enable = mkBoolOpt false;
-  };
+  options.modules.desktop.xmonad = { enable = mkBoolOpt false; };
 
   config = mkIf config.modules.desktop.xmonad.enable {
     modules.desktop = {
       envProto = "x11";
-      toolset.fileBrowse = {
-        nautilus.enable = true;
-      };
+      toolset.fileBrowse = { nautilus.enable = true; };
       extensions = {
         fcitx5.enable = true;
         mimeApps.enable = true; # mimeApps -> default launch application

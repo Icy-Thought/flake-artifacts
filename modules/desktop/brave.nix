@@ -1,29 +1,22 @@
-{ options
-, config
-, lib
-, pkgs
-, ...
-}:
+{ options, config, lib, pkgs, ... }:
 with lib;
-with lib.my; let
-  cfg = config.modules.desktop.browsers.brave;
-in
-{
-  options.modules.desktop.browsers.brave = {
-    enable = mkBoolOpt false;
-  };
+with lib.my;
+let cfg = config.modules.desktop.browsers.brave;
+in {
+  options.modules.desktop.browsers.brave = { enable = mkBoolOpt false; };
 
   config = mkIf cfg.enable {
-    user.packages = with pkgs; [
-      (makeDesktopItem {
-        name = "brave-private";
-        desktopName = "Brave Web Browser (Private)";
-        genericName = "Launch a Private Brave-browser Instance";
-        icon = "brave";
-        exec = "${getExe brave} --incognito";
-        categories = [ "Network" ];
-      })
-    ];
+    user.packages = with pkgs;
+      [
+        (makeDesktopItem {
+          name = "brave-private";
+          desktopName = "Brave Web Browser (Private)";
+          genericName = "Launch a Private Brave-browser Instance";
+          icon = "brave";
+          exec = "${getExe brave} --incognito";
+          categories = [ "Network" ];
+        })
+      ];
 
     hm.programs.chromium = {
       enable = true;
@@ -41,11 +34,13 @@ in
         { id = "jinjaccalgkegednnccohejagnlnfdag"; } # Violentmonkey
         {
           id = "dcpihecpambacapedldabdbpakmachpb";
-          updateUrl = "https://raw.githubusercontent.com/iamadamdev/bypass-paywalls-chrome/master/src/updates/updates.xml";
+          updateUrl =
+            "https://raw.githubusercontent.com/iamadamdev/bypass-paywalls-chrome/master/src/updates/updates.xml";
         }
-        (mkIf config.modules.desktop.gnome.enable [
-          { id = "gphhapmejobijbbhgpjhcjognlahblep"; } # Gnome-Shell-Integration
-        ])
+        (mkIf config.modules.desktop.gnome.enable [{
+          id = "gphhapmejobijbbhgpjhcjognlahblep";
+        } # Gnome-Shell-Integration
+          ])
       ];
     };
   };

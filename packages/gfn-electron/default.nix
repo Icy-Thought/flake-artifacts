@@ -1,22 +1,17 @@
-{ lib
-, makeDesktopItem
-, copyDesktopItems
-, stdenvNoCC
-, fetchurl
-, appimageTools
-,
+{ lib, makeDesktopItem, copyDesktopItems, stdenvNoCC, fetchurl, appimageTools,
 }:
 let
   pname = "gfn-electron";
   version = "1.10.0";
   src = fetchurl {
-    url = "https://github.com/hmlendea/gfn-electron/releases/download/v${version}/geforcenow-electron_${version}_linux.AppImage";
+    url =
+      "https://github.com/hmlendea/gfn-electron/releases/download/v${version}/geforcenow-electron_${version}_linux.AppImage";
     hash = "sha256-t+IqUZrgXlyrmBJ5HYNYyn0Th5rezbg3cepPwg5S8tg=";
   };
   appimage = appimageTools.wrapType2 { inherit version pname src; };
   appimage-contents = appimageTools.extractType2 { inherit version pname src; };
-in
-stdenvNoCC.mkDerivation {
+
+in stdenvNoCC.mkDerivation {
   inherit version pname;
   src = appimage;
 
@@ -45,7 +40,8 @@ stdenvNoCC.mkDerivation {
   '';
 
   meta = with lib; {
-    description = "Linux Desktop client for Nvidia's GeForce NOW game streaming service";
+    description =
+      "Linux Desktop client for Nvidia's GeForce NOW game streaming service";
     homepage = "https://github.com/hmlendea/gfn-electron";
     license = licenses.gpl3Only;
     platforms = platforms.linux;

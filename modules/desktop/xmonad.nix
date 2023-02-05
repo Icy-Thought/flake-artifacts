@@ -1,21 +1,10 @@
-{ inputs
-, options
-, config
-, lib
-, pkgs
-, ...
-}:
+{ inputs, options, config, lib, pkgs, ... }:
 with lib;
 with lib.my; {
-  options.modules.desktop.xmonad = {
-    enable = mkBoolOpt false;
-  };
+  options.modules.desktop.xmonad = { enable = mkBoolOpt false; };
 
   config = mkIf config.modules.desktop.xmonad.enable {
-    nixpkgs.overlays = with inputs; [
-      xmonad.overlay
-      xmonad-contrib.overlay
-    ];
+    nixpkgs.overlays = with inputs; [ xmonad.overlay xmonad-contrib.overlay ];
 
     environment.systemPackages = with pkgs; [
       haskellPackages.my-xmonad
